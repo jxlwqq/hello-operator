@@ -234,3 +234,57 @@ operator-sdk olm install
 # 使用 Operator SDK 中的 OLM 集成在集群中运行 Operator
 operator-sdk run bundle docker.io/jxlwqq/hello-operator-bundle:v0.0.1
 ```
+
+### 创建自定义资源
+
+编辑 config/samples/app_v1alpha1_hello.yaml 上的 Hello CR 清单示例，使其包含以下规格：
+
+```yaml
+apiVersion: app.jxlwqq.github.io/v1alpha1
+kind: Hello
+metadata:
+  name: hello-sample
+spec:
+  # Add fields here
+  size: 2
+  version: "1.9"
+
+```
+
+创建 CR：
+```shell
+kubectl apply -f config/samples/app_v1alpha1_hello.yaml
+```
+
+查看 Pod：
+```shell
+NAME                     READY   STATUS    RESTARTS   AGE
+hello-5cdd78d697-8jz8k   1/1     Running   0          9s
+hello-5cdd78d697-rmrhd   1/1     Running   0          9s
+```
+
+查看 Service：
+```shell
+NAME         TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)          AGE
+hello-svc    NodePort    10.98.205.249   <none>        8080:30691/TCP   18s
+kubernetes   ClusterIP   10.96.0.1       <none>        443/TCP          3h9m
+```
+
+浏览器访问：http://localhost:30691
+
+网页上会显示出 Hello world! 的欢迎页面。
+
+更新 CR：
+
+```shell
+# 修改副本数和 Hello 版本
+kubectl patch hello hello-sample -p '{"spec":{"size": 3, "version": "1.10"}}' --type=merge
+```
+
+查看 Pod：
+```shell
+NAME                     READY   STATUS    RESTARTS   AGE
+hello-5bcdc7b75f-p4ktw   1/1     Running   0          7s
+hello-5bcdc7b75f-p5tkx   1/1     Running   0          7s
+hello-5bcdc7b75f-qswxd   1/1     Running   0          7s
+```
