@@ -56,3 +56,9 @@ type WordpressSpec struct {
 	Size int32 `json:"size"`
 	Version string `json:"version"`
 }
+```
+
+为资源类型更新生成的代码：
+```shell
+make generate
+```
