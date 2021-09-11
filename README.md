@@ -47,12 +47,12 @@ operator-sdk create api \
 ```
 
 
-定义 Wordpress 自定义资源（CR）的 API。
+定义 Hello 自定义资源（CR）的 API。
 
-修改 api/v1alpha1/wordpress_types.go 中的 Go 类型定义，使其具有以下 spec 和 status
+修改 api/v1alpha1/hello_types.go 中的 Go 类型定义，使其具有以下 spec 和 status
 
 ```go
-type WordpressSpec struct {
+type HellloSpec struct {
 	Size int32 `json:"size"`
 	Version string `json:"version"`
 }
@@ -61,4 +61,14 @@ type WordpressSpec struct {
 为资源类型更新生成的代码：
 ```shell
 make generate
+```
+
+运行以下命令以生成和更新 CRD 清单：
+```shell
+make manifests
+```
+
+运行以下命令以生成和更新 CRD 清单：
+```shell
+make manifests
 ```
