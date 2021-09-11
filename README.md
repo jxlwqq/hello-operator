@@ -288,3 +288,10 @@ hello-5bcdc7b75f-p4ktw   1/1     Running   0          7s
 hello-5bcdc7b75f-p5tkx   1/1     Running   0          7s
 hello-5bcdc7b75f-qswxd   1/1     Running   0          7s
 ```
+
+#### 做好清理
+
+```shell
+operator-sdk cleanup hello-operator
+operator-sdk olm uninstall
+```
