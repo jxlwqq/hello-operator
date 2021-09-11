@@ -18,7 +18,9 @@ package controllers
 
 import (
 	"context"
-
+	appsv1 "k8s.io/api/apps/v1"
+	corev1 "k8s.io/api/core/v1"
+	"k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/runtime"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
@@ -36,6 +38,8 @@ type HelloReconciler struct {
 //+kubebuilder:rbac:groups=app.jxlwqq.github.io,resources=hellos,verbs=get;list;watch;create;update;patch;delete
 //+kubebuilder:rbac:groups=app.jxlwqq.github.io,resources=hellos/status,verbs=get;update;patch
 //+kubebuilder:rbac:groups=app.jxlwqq.github.io,resources=hellos/finalizers,verbs=update
+//+kubebuilder:rbac:groups=apps,resources=deployments,verbs=get;list;watch;create;update;patch;delete
+//+kubebuilder:rbac:groups=core,resources=services,verbs=get;list;watch;create;update;patch;delete
 
 // Reconcile is part of the main kubernetes reconciliation loop which aims to
 // move the current state of the cluster closer to the desired state.
@@ -47,9 +51,36 @@ type HelloReconciler struct {
 // For more details, check Reconcile and its Result here:
 // - https://pkg.go.dev/sigs.k8s.io/controller-runtime@v0.9.2/pkg/reconcile
 func (r *HelloReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
-	_ = log.FromContext(ctx)
+	reqLogger := log.FromContext(ctx)
+	reqLogger.Info("Reconciling Hello")
 
-	// your logic here
+	hello := &appv1alpha1.Hello{}
+	err := r.Client.Get(context.TODO(), req.NamespacedName, hello)
+	if err != nil {
+		if errors.IsNotFound(err) {
+			return ctrl.Result{}, nil
+		}
+		return ctrl.Result{}, err
+	}
+
+	var result *ctrl.Result
+	reqLogger.Info("---Frontend Deployment---")
+	result, err = r.ensureDeployment(r.frontendDeployment(hello))
+	if result != nil {
+		return *result, err
+	}
+
+	reqLogger.Info("---Frontend Service---")
+	result, err = r.ensureService(r.frontendService(hello))
+	if result != nil {
+		return *result, err
+	}
+
+	reqLogger.Info("---Frontend Change Handler---")
+	result, err = r.handleFrontendChanges(hello)
+	if result != nil {
+		return *result, err
+	}
 
 	return ctrl.Result{}, nil
 }
@@ -58,5 +89,7 @@ func (r *HelloReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl
 func (r *HelloReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&appv1alpha1.Hello{}).
+		Owns(&appsv1.Deployment{}).
+		Owns(&corev1.Service{}).
 		Complete(r)
 }
