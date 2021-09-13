@@ -295,3 +295,7 @@ hello-5bcdc7b75f-qswxd   1/1     Running   0          7s
 operator-sdk cleanup hello-operator
 operator-sdk olm uninstall
 ```
+
+### 更多
+
+更多经典示例请参考：https://github.com/jxlwqq/kubernetes-examples
