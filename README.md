@@ -73,7 +73,7 @@ make manifests
 make manifests
 ```
 
-#### 实现控制器
+### 实现控制器
 
 > 由于逻辑较为复杂，代码较为庞大，所以无法在此全部展示，完整的操作器代码请参见 controllers 目录。
 在本例中，将生成的控制器文件 controllers/hello_controller.go 替换为以下示例实现：
@@ -181,7 +181,7 @@ make manifests
 ```
 
 
-#### 运行 Operator
+### 运行 Operator
 
 捆绑 Operator，并使用 Operator Lifecycle Manager（OLM）在集群中部署。
 
@@ -289,7 +289,7 @@ hello-5bcdc7b75f-p5tkx   1/1     Running   0          7s
 hello-5bcdc7b75f-qswxd   1/1     Running   0          7s
 ```
 
-#### 做好清理
+### 做好清理
 
 ```shell
 operator-sdk cleanup hello-operator
